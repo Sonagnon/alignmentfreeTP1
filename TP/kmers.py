@@ -23,7 +23,7 @@ def compare_kmers(km1, km2):
     for i in range(len(km1)):
         if km1[i] != km2[i]:
             return False
-        return True
+    return True
 
 
 def encode_kmer(kmer):
@@ -43,43 +43,38 @@ def encode_nucl(letter):
     encoding = {'A': 0b00,  'C': 0b01,  'T': 0b10,  'G': 0b11  }
     return encoding[letter]
 
-    
 def enumerate_kmers(seq, k):
-    '''Fonction qui retourne tous les k-mers d'une séquence ou un text 
+    '''Fonction qui retourne tous les k-mers d'une séquence ou un text
         Entrée : la séquence et la taille k des kmers
         Sortie: un générateur contenant les k-mers
     '''
-    mask = (1 << (2 * k)) - 1 
+    mask = (1 << (2 * k)) - 1
     #kmer = encode_kmer(seq[0:k-1], k)
     kmer = encode_kmer(seq, k)
     yield kmer  # Premier k-mer
-    
     for i in range(1, len(seq) - k + 1):
         kmer = (kmer << 2) & mask  # Décaler à gauche et appliquer le masque
         kmer += encode_nucl(seq[i + k - 1])  # Ajouter le nouveau nucléotide
-        
-        yield kmer 
+        yield kmer
 
 
 def compare_kmers(km1, km2):
     '''Fonction qui compare deux k-mers entre eux
-        km1 : kmer 1 
+        km1 : kmer 1
         km2 : kmer 2
 
         Sortie: Vrai ou Faux
     '''
-    
     for i in range(len(km1)):
         if km1[i] != km2[i]:
             return False
-    return True 
+    return True
 
 
 
 
 def create_index(seq, k):
     """ Fonction qui Cré un index des k-mers encodés d'une séquence donnée.
-    
     :param seq: La séquence d'entrée.
     :param k: La longueur des k-mers.
     :return: Un dictionnaire avec les k-mers encodés comme clés et leurs fréquences comme valeurs.
@@ -87,7 +82,6 @@ def create_index(seq, k):
     Nous avons fait le choix d'encoder aussi les kmers dans l'index, pour faciliter la comparaison des kmers dans la fonction suivantes.
     """
     index = {}
-    
     # Itérer sur tous les k-mers dans la séquence
     for i in range(len(seq) - k + 1):
         kmer = encode_kmer(seq[i:i + k], k)  # Encoder le k-mer
@@ -97,7 +91,6 @@ def create_index(seq, k):
             index[kmer] += 1
         else:
             index[kmer] = 1
-            
     return index
 
 
@@ -110,12 +103,11 @@ def compare_sequences(seq1, seq2, k):
             intersect , la taille de l'intersection entre les deuc séquence
             union, la taille de l'union des deux séquences
     '''
-    index = create_index(seq1, k) 
+    index = create_index(seq1, k)
     print(index)
     intersect = 0
-    union = sum(index.values()) 
-    
-    for kmer in enumerate_kmers(seq2, k): 
+    union = sum(index.values())
+    for kmer in enumerate_kmers(seq2, k):
 
         if kmer in index and index[kmer] > 0:
             intersect += 1
